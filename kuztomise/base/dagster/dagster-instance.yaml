@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dagster-instance
+  labels:
+    app: dagster
+data:
+  dagster.yaml: |
+    scheduler:
+      module: dagster_cron.cron_scheduler
+      class: SystemCronScheduler
+
+    schedule_storage:
+      module: dagster_postgres.schedule_storage
+      class: PostgresScheduleStorage
+      config:
+        postgres_db:
+          username:
+            env: POSTGRES_USER
+          password:
+            env: POSTGRES_PASSWORD
+          hostname:
+            env: POSTGRES_HOST
+          db_name:
+            env: POSTGRES_DB
+          port: 5432
+
+    run_launcher:
+      module: dagster_k8s.launcher
+      class: K8sRunLauncher
+      config:
+        service_account_name: dagster
+        job_image: pymetrics/dagster:test
+        dagster_home: /opt/dagster/dagster_home
+        instance_config_map: dagster-instance
+        postgres_password_secret: dagster-database
+        image_pull_policy: always
+        job_namespace: data
+
+    run_storage:
+      module: dagster_postgres.run_storage
+      class: PostgresRunStorage
+      config:
+        postgres_db:
+          username:
+            env: POSTGRES_USER
+          password:
+            env: POSTGRES_PASSWORD
+          hostname:
+            env: POSTGRES_HOST
+          db_name:
+            env: POSTGRES_DB
+          port: 5432
+
+    event_log_storage:
+      module: dagster_postgres.event_log
+      class: PostgresEventLogStorage
+      config:
+        postgres_db:
+          username:
+            env: POSTGRES_USER
+          password:
+            env: POSTGRES_PASSWORD
+          hostname:
+            env: POSTGRES_HOST
+          db_name:
+            env: POSTGRES_DB
+          port: 5432

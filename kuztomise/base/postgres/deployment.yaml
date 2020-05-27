@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: dagster-database
+  namespace: data
+  labels:
+    app: dagster-database
+    release: dagster
+    heritage: Tiller
+spec:
+  replicas: 1
+  serviceName: dagster-database
+  selector:
+    matchLabels:
+      app: dagster-database
+      release: dagster
+  template:
+    metadata:
+      labels:
+        app: dagster-database
+        release: dagster
+    spec:
+      containers:
+      - name: dagster-database
+        image: postgres:10.3-alpine
+        ports:
+        - name: ingress
+          containerPort: 5432
+          protocol: TCP
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/postgresql
+        envFrom:
+          - secretRef:
+              name: dagster-database
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+      labels:
+        app: dagster-database
+        release: dagster
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      volumeMode: Filesystem
+      resources:
+        requests:
+          storage: 8Gi

@@ -1,0 +1,3 @@
+repository:
+  module: config # config.py
+  fn: define_repo

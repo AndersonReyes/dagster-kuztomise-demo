@@ -1,0 +1,17 @@
+resources:
+- dagster/dagster-instance.yaml
+- dagster/deployment-dagit.yaml
+- dagster/ingress.yaml
+- dagster/role.yaml
+- dagster/rolebinding.yaml
+- dagster/serviceaccount.yaml
+- dagster/service-dagit.yaml
+- postgres/deployment.yaml
+- postgres/service.yaml
+
+namespace: data
+commonLabels:
+  release: dagster
+
+generatorOptions:
+ disableNameSuffixHash: true

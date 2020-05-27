@@ -1,0 +1,19 @@
+---
+# Source: dagster/templates/rolebinding.yaml
+
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: dagster-rolebinding
+  labels:
+    app: dagster
+    chart: dagster-0.1.0
+    release: "dagster"
+    heritage: "Tiller"
+subjects:
+- kind: ServiceAccount
+  name: dagster
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: dagster-role

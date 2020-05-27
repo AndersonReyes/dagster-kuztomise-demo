@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dagster-dagit
+  labels:
+    helm.sh/chart: dagster-0.1.0
+    app.kubernetes.io/name: dagster
+    app.kubernetes.io/instance: dagster
+    app.kubernetes.io/version: "0.6.9"
+    app.kubernetes.io/managed-by: Tiller
+    component: dagit
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: dagster
+      app.kubernetes.io/instance: dagster
+      component: dagit
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: dagster
+        app.kubernetes.io/instance: dagster
+        component: dagit
+      annotations:
+        checksum/dagster-instance: 77caa6f2389fbe6f089e596b2ad7104ef2dcaf9a7a4d0b9b65bf57b141063e85
+    spec:
+      serviceAccountName: dagster
+      securityContext:
+        {}
+
+      initContainers:
+        - name: check-db-ready
+          image: postgres:9.6.16
+          command: ['sh', '-c',
+            'until pg_isready -h "dagster-database"; do echo waiting for database; sleep 2; done;',
+            ]
+          securityContext:
+            {}
+
+      containers:
+        - name: dagster
+          securityContext:
+            {}
+
+          imagePullPolicy: IfNotPresent
+          image: pymetrics/dagster:test
+          envFrom:
+            - secretRef:
+                name: dagster-database
+          volumeMounts:
+            - name: dagster-instance
+              mountPath: /opt/dagster/dagster_home/dagster.yaml
+              subPath: dagster.yaml
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {}
+
+      volumes:
+        - name: dagster-instance
+          configMap:
+            name: dagster-instance

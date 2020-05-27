@@ -1,0 +1,25 @@
+version: "3"
+services:
+  dagster:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+      args:
+        PIP_EXTRA_INDEX_URL:
+    image: pymetrics/dagster:test
+    env_file:
+      - docker.env
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./dagster-home:$DAGSTER_HOME
+    depends_on:
+      - dagster-database
+
+  dagster-database:
+    image: postgres:11
+    container_name: dagster-database
+    ports:
+      - "5432:5432"
+    env_file:
+      - docker.env

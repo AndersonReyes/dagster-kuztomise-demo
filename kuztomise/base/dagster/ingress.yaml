@@ -1,0 +1,21 @@
+---
+# Source: dagster/templates/ingress.yaml
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: dagster
+  labels:
+    helm.sh/chart: dagster-0.1.0
+    app.kubernetes.io/name: dagster
+    app.kubernetes.io/instance: dagster
+    app.kubernetes.io/version: "0.6.9"
+    app.kubernetes.io/managed-by: Tiller
+spec:
+  rules:
+    - host: "dagster.pymetrics.localhost"
+      http:
+        paths:
+          - path: /*
+            backend:
+              serviceName: dagster-dagit
+              servicePort: http

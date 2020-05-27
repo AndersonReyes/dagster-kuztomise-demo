@@ -1,0 +1,14 @@
+bases:
+- ../../base/
+# namePrefix:
+
+secretGenerator:
+- name: dagster-database
+  literals:
+    - POSTGRES_USER=dagster
+    - POSTGRES_PASSWORD=test
+    - POSTGRES_DB=dagster
+    - POSTGRES_HOST=dagster-database
+
+generatorOptions:
+ disableNameSuffixHash: true
