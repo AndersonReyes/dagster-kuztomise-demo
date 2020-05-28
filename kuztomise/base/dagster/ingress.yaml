@@ -12,7 +12,7 @@ metadata:
     app.kubernetes.io/managed-by: Tiller
 spec:
   rules:
-    - host: "dagster.pymetrics.localhost"
+    - host: "dagster.local.localhost"
       http:
         paths:
           - path: /*
